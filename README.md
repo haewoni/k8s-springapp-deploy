@@ -1,3 +1,5 @@
+# <p align="center"> k8s-springapp-deploy
+
 ### kubernetes를 이용한 spring boot 애플리케이션 배포 자동화 실습
 
 ## 사용기술
@@ -46,6 +48,7 @@ ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 <br>
 
 ## step 02 : 이미지 빌드 및 푸시
+- script
 ```
   977  docker login
   978  docker images
@@ -55,6 +58,9 @@ ENTRYPOINT ["java", "-jar", "/app/app.jar"]
   982  docker images
   983  docker push suzyhw96/springapp:1.0
 ```
+- docker hub
+![image](https://github.com/user-attachments/assets/247319e1-d297-421d-8b1c-e3c348ede026)
+
 <br>
 
 ## step 03 : Kubernetes 배포 구성 파일 작성 (.yml)
