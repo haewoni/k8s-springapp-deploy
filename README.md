@@ -75,11 +75,11 @@ spec:
   replicas: 3  # 컨테이너 3개로 구성
   selector:
     matchLabels:
-      app: springapp  # matchLabels는 Service의 selector와 일치해야 합니다.
+      app: springapp  # matchLabels는 Service의 selector와 일치해해야 함
   template:
     metadata:
       labels:
-        app: springapp  # Pod의 라벨이 Service와 매칭되어야 합니다.
+        app: springapp  # Pod의 라벨이 Service와 매칭되어야 함
     spec:
       containers:
         - name: springapp-container
@@ -93,7 +93,7 @@ metadata:
   name: springapp-service
 spec:
   selector:
-    app: springapp  # Deployment의 matchLabels와 일치해야 합니다.
+    app: springapp  # Deployment의 matchLabels와 일치해야 함
   ports:
     - protocol: TCP
       port: 80  # 클러스터 외부에서 접근하는 포트
