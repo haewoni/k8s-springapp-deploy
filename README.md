@@ -1,5 +1,6 @@
-# <p align="center"> k8s-springapp-deploy
 ### kubernetes를 이용한 spring boot 애플리케이션 배포 자동화 실습
+
+## 사용기술
 
 
 <br>
@@ -26,17 +27,97 @@
 ## 실습 과정 :mag_right:
 
 ## step 01 : Spring boot 애플리케이션을 Docker 이미지로 만들기
+- 작업경로에 .jar 파일 복사
+- Dockerfile 생성
+```
+# 베이스 이미지로 OpenJDK를 사용
+FROM openjdk:17-slim
 
+# 애플리케이션 JAR 파일을 /app 디렉토리로 복사
+COPY SpringApp-0.0.1-SNAPSHOT.jar /app/app.jar
+
+# 헬스 체크 설정
+HEALTHCHECK --interval=10s --timeout=30s CMD curl -f http://localhost:8999/index.html || exit 1
+
+# 애플리케이션을 실행
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
+```
 <br>
 
 ## step 02 : 이미지 빌드 및 푸시
+```
+  977  docker login
+  978  docker images
+  979  docker build -t springapp .
+  980  docker images
+  981  docker tag springapp suzyhw96/springapp:1.0
+  982  docker images
+  983  docker push suzyhw96/springapp:1.0
+```
 <br>
 
 ## step 03 : Kubernetes 배포 구성 파일 작성 (.yml)
+- sadedeploy.yml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springapp-deployment
+spec:
+  replicas: 3  # 컨테이너 3개로 구성
+  selector:
+    matchLabels:
+      app: springapp  # matchLabels는 Service의 selector와 일치해야 합니다.
+  template:
+    metadata:
+      labels:
+        app: springapp  # Pod의 라벨이 Service와 매칭되어야 합니다.
+    spec:
+      containers:
+        - name: springapp-container
+          image: suzyhw96/springapp:1.0
+          ports:
+            - containerPort: 8999  # 컨테이너 내부에서 리스닝하는 포트
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springapp-service
+spec:
+  selector:
+    app: springapp  # Deployment의 matchLabels와 일치해야 합니다.
+  ports:
+    - protocol: TCP
+      port: 80  # 클러스터 외부에서 접근하는 포트
+      targetPort: 8999  # 컨테이너 내부 포트
+  type: LoadBalancer
 
+```
 <br>
 
 ## step 04 : Kubernetes 배포 및 확인
+- script
+```
+  992  kubectl apply -f sadeploy.yml 
+  993  kubectl get deployments
+  994  kubectl get pods
+  995  kubectl get services
+  996  minikube service springapp-service
+```
+
+- dashboard 확인
+
+  ![image](https://github.com/user-attachments/assets/72d67bd9-c570-4883-84cd-b56d41eebd70)
+
+- port forwarding <br>
+![image](https://github.com/user-attachments/assets/92748977-a767-45f0-af87-59ddcaea93d1)
+
+<br>
+
+- localhost:81 확인
+
+![image](https://github.com/user-attachments/assets/6b52bee2-5acb-4d8b-b2f3-84592e82ef90).
 
 
 <br>
